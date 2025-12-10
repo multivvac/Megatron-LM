@@ -8,6 +8,8 @@ PP_SIZE=$4
 echo "Starting torchrun on Node Rank: $RANK"
 
 unset OMP_NUM_THREADS
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export CUDA_DEVICE_MAX_CONNECTIONS=1
 
 # Launch
 torchrun \
@@ -19,10 +21,10 @@ torchrun \
   pretrain_gpt.py \
   --tensor-model-parallel-size $TP_SIZE \
   --pipeline-model-parallel-size $PP_SIZE \
-  --num-layers 8 \
-  --hidden-size 512 \
+  --num-layers 24 \
+  --hidden-size 1024 \
   --transformer-impl local \
-  --num-attention-heads 8 \
+  --num-attention-heads 16 \
   --seq-length 512 \
   --max-position-embeddings 512 \
   --micro-batch-size 4 \

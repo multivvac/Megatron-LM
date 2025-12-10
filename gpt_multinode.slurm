@@ -1,9 +1,10 @@
 #!/bin/bash -l
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=2
-#SBATCH --time=00:20:00
+#SBATCH --cpus-per-task=28
+#SBATCH --time=02:00:00
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
+#SBATCH --exclusive
 
 module load system/CUDA lib/NCCL
 
@@ -17,7 +18,7 @@ export MASTER_ADDR=$head_node
 export MASTER_PORT=29500
 
 NNODES=$SLURM_NNODES
-GPUS_PER_NODE=$(nvidia-smi --query-gpu=name --format=csv,noheader | wc -l)
+GPUS_PER_NODE=$GPUS
 
 # Default to 1 if somehow missing
 TP_SIZE=${CUSTOM_TP:-1}

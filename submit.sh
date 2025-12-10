@@ -33,10 +33,11 @@ echo "Output log:     $LOG_NAME"
 
 export CUSTOM_TP=$TP
 export CUSTOM_PP=$PP
+export GPUS=$GPUS
 
 sbatch \
     --nodes=$NODES \
-    --gpus-per-node=$GPUS \
+    --gpus-per-task=$GPUS \
     --job-name=$JOB_NAME \
     --output=$LOG_NAME \
     --export=ALL \

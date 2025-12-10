@@ -1,4 +1,22 @@
-torchrun --nproc_per_node=4 pretrain_gpt.py \
+#!/bin/bash
+
+# We pass the working directory as the first argument from the SLURM script
+REPO_PATH=$1
+RANK=$SLURM_NODEID
+
+echo "Node Rank: $RANK"
+echo "Repo Path: $REPO_PATH"
+
+# Ensure we don't have conflicting variables
+unset OMP_NUM_THREADS
+
+torchrun \
+  --nproc_per_node=1 \
+  --nnodes=2 \
+  --node_rank=$RANK \
+  --master_addr=$MASTER_ADDR \
+  --master_port=$MASTER_PORT \
+  $REPO_PATH/pretrain_gpt.py \
   --tensor-model-parallel-size 1 \
   --pipeline-model-parallel-size 1 \
   --num-layers 8 \
@@ -17,15 +35,12 @@ torchrun --nproc_per_node=4 pretrain_gpt.py \
   --optimizer adam \
   --weight-decay 0.01 \
   --clip-grad 1.0 \
-  --train-iters 1000 \
-  --eval-iters 0 \
-  --eval-interval 1000 \
   --save-interval 1000 \
   --log-interval 10 \
-  --num-workers 1 \
+  --num-workers 0 \
   --split 100,0,0 \
-  --data-path data/tinyshk_gpt2_text_document \
-  --vocab-file tokenizer/gpt2-vocab.json \
-  --merge-file tokenizer/gpt2-merges.txt \
+  --data-path $REPO_PATH/data/tinyshk_gpt2_text_document \
+  --vocab-file $REPO_PATH/tokenizer/gpt2-vocab.json \
+  --merge-file $REPO_PATH/tokenizer/gpt2-merges.txt \
   --tokenizer-type GPT2BPETokenizer \
-  --save checkpoints/tinyshk-gpt2
+  --save $REPO_PATH/checkpoints/multinode-gpt2
